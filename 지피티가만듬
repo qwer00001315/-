@@ -1,0 +1,63 @@
+import pygame
+import sys
+
+# 초기 설정
+pygame.init()
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("2D Jump Game")
+
+clock = pygame.time.Clock()
+
+# 색상
+WHITE = (255, 255, 255)
+BLUE = (50, 150, 255)
+GREEN = (50, 200, 50)
+
+# 플레이어 설정
+player = pygame.Rect(100, 400, 50, 50)
+velocity_y = 0
+gravity = 0.8
+jump_power = -15
+on_ground = False
+
+ground = pygame.Rect(0, 500, WIDTH, 100)
+
+# 게임 루프
+while True:
+    clock.tick(60)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    keys = pygame.key.get_pressed()
+
+    # 좌우 이동
+    if keys[pygame.K_LEFT]:
+        player.x -= 5
+    if keys[pygame.K_RIGHT]:
+        player.x += 5
+
+    # 점프
+    if keys[pygame.K_SPACE] and on_ground:
+        velocity_y = jump_power
+        on_ground = False
+
+    # 중력 적용
+    velocity_y += gravity
+    player.y += velocity_y
+
+    # 바닥 충돌
+    if player.colliderect(ground):
+        player.bottom = ground.top
+        velocity_y = 0
+        on_ground = True
+
+    # 화면 그리기
+    screen.fill(WHITE)
+    pygame.draw.rect(screen, BLUE, player)
+    pygame.draw.rect(screen, GREEN, ground)
+
+    pygame.display.flip()
